@@ -1,4 +1,6 @@
-# Create a class to store information about lane line instances
+# Class to store information about lane line instances
+import numpy as np
+
 class Line():
     def __init__(self):
         # Set a boolean value to true of a line was detected in the last iteration

@@ -27,11 +27,11 @@ class Camera():
         self.ret, self.mtx, self.dist, self.rvecs, self.tvecs = cv2.calibrateCamera(self.obj_points, self.img_points, image.shape[1:3], None, None)
         
 
-    def undistort(self, image, mtx, dist):
+    def undistort(self, image):
         '''
         Undistort an image from provided image and camera calibration
         values, then return it.
         '''
-        return cv2.undistort(image, mtx, dist, None, mtx)
+        return cv2.undistort(image, self.mtx, self.dist, None, self.mtx)
 
     # TODO: Add Chessboard Corners detection function to implement calibration matrix

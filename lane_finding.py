@@ -4,18 +4,19 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import helpers
 import line
+import filters
 
 # Use the interact widget to help with parameter tuning
 from IPython.html.widgets import *
 
-def find_lane(image):    
+def find_lane(camera, image):    
     img = np.copy(image)
     
     #Undistort image
-    undist_img = helpers.undistort_image(img, mtx, dist)
+    undist_img = camera.undistort(img)
     
     # Apply various filters to obtain lane lines from image
-    masked_img = helpers.select_lines_in_colorspaces(undist_img)
+    masked_img = filters.select_lines_in_colorspaces(undist_img)
     
     # Get lane perspective
     warped_image, M, Minv = helpers.get_lane_perspective(masked_img)
@@ -32,7 +33,7 @@ def find_lane(image):
         left_fit, left_fitx, right_fit, right_fitx, ploty = helpers.fit_poly(warped_image.shape, leftx, lefty, rightx, righty)
 
         # Get curve radius and lane offset from lane lines
-        left_curve_rad, right_curve_rad, lane_center_offset = helpers.measure_curvature_pixels_and_lane_offset(warped_image.shape, ploty, left_fitx, right_fitx, left_fit, right_fit)
+        left_curve_rad, right_curve_rad, lane_center_offset = measure_curvature_pixels_and_lane_offset(warped_image.shape, ploty, left_fitx, right_fitx, left_fit, right_fit)
 
 
         # Add current fit to Line class for each lane line
@@ -46,10 +47,10 @@ def find_lane(image):
     lane_center_offset = left_lane_line.line_base_pos
     
     # Draw the best_fit (averaged) lane lines onto the image
-    weighted_img = helpers.draw_lane(undist_img, warped_image, left_lane_line.get_best_fit(), right_lane_line.get_best_fit(), Minv)
+    weighted_img = draw_lane(undist_img, warped_image, left_lane_line.get_best_fit(), right_lane_line.get_best_fit(), Minv)
 
     # Return the image with the radius of curvature and vehicle location information displayed
-    return helpers.draw_curve_radius_info(weighted_img, curve_rad_avg, lane_center_offset)
+    return draw_curve_radius_info(weighted_img, curve_rad_avg, lane_center_offset)
 
 
 # Calculate lane offset, then draw lane
